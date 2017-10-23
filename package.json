@@ -1,0 +1,31 @@
+{
+    "name": "stockcharter-node",
+    "version": "1.0.0",
+    "engines": {
+        "node": "6.11.x"
+    },
+    "scripts": {
+        "start": "nodemon server",
+        "heroku-postbuild": "cd client/ && npm install && npm install --only=dev --no-shrinkwrap && npm run build"
+    },
+    "cacheDirectories": [
+        "node_modules",
+        "client/node_modules"
+    ],
+    "dependencies": {
+        "body-parser": "^1.18.2",
+        "cors": "^2.8.4",
+        "express": "^4.16.2",
+        "google-stocks": "^1.0.1",
+        "mongoose": "^4.12.3",
+        "socket.io": "^2.0.3"
+    },
+    "respository": {
+        "type": "git",
+        "url": "https://github.com/Scumworth/stockcharter.git"
+    },
+    "license": "MIT",
+    "devDependencies": {
+        "nodemon": "^1.12.1"
+    }
+}
