@@ -1,44 +1,46 @@
 // server/index.js
 'use strict'
 
-import googleStocks from 'google-stocks';
-import express from 'express';
-import mongoose from './db/mongoose';
-import Stock from './models/stock';
-import path from 'path';
-import bodyParser from 'body-parser';
-import cors from 'cors';
+const googleStocks = require('google-stocks');
+const express = require('express');
+const { mongoose } = require('./db/mongoose');
+const { Stock } = require('./models/stock');
+const path = require('path');
+const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
-const router = express.Router();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 app.use(express.static(path.resolve(__dirname, '../client/build')));
 
 app.use(cors());
 app.use(bodyParser.json());
 
-router.get('/', (req, res) => {
-    res.json({ message: 'API initialized' });
+http.listen(PORT, () => {
+    console.log(`API running on port ${PORT}`);
 });
 
-router.route('/stocks')
-    .get((req, res) => {
-        console.log(req.body.stock);
-    })
-    .post((req, res) => {
-        
+//socket logic
+io.on('connection', socket => {
+    console.log(`Connected to socket ${socket.id}`);
+    Stock.find({}, (err, result) => {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            socket.emit('startingStockList', result)
+            console.log('startingStockList retrieved');
+        }
     });
+    socket.on('disconnect', () => console.log(`Disconnected ${socket.id}`));
 
-app.use('/api', router);
+});
 
 app.get('*', (req, res) => {
     res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
 });
 
-http.listen(PORT, () => {
-    console.log(`API running on port ${PORT}`);
-});
 

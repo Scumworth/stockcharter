@@ -1,7 +1,7 @@
 // server/models/stock.js
 'use strict';
 
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const StockSchema = new Schema({
@@ -10,4 +10,4 @@ const StockSchema = new Schema({
 
 const Stock = mongoose.model('Stock', StockSchema);
 
-module.exports = { Bar }
+module.exports = { Stock }

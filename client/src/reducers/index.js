@@ -1,7 +1,7 @@
 // reducers/index.js
 
 import { combineReducers } from 'redux';
-import { REQUEST_STOCKS, RECEIVE_STOCKS } from '../actions';
+import { STARTING_STOCKS } from '../actions';
 
 const stocks = (state = {
     isFetching: false,
@@ -9,15 +9,10 @@ const stocks = (state = {
     results: []
 }, action) => {
     switch (action.type) {
-        case REQUEST_STOCKS:
+
+        case STARTING_STOCKS:
             return {
                 ...state,
-                isFetching: true
-            }
-        case RECEIVE_STOCKS:
-            return {
-                ...state,
-                isFetching: false,
                 stocksLoaded: true,
                 results: action.results
             }

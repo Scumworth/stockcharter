@@ -3,13 +3,22 @@ import Header from './../components/Header';
 import Footer from './../components/Footer';
 import Main from './../components/Main';
 import { connect } from 'react-redux';
-import { getStocks } from './../actions';
+import { loadStartingStocks } from './../actions';
 import Loader from 'react-loader';
-//const Loader = require('react-loader');
+import io from 'socket.io-client';
+let socket;
 
 class App extends Component {
+
+    constructor(props) {
+        super(props);
+        socket = io.connect('http://localhost:3001');
+    }
     componentDidMount() {
-        this.props.getStocks(this.props.url); 
+        this.props.loadStartingStocks(socket); 
+    }
+    componentWillUnmount() {
+        socket.disconnect();
     }
     render() {
         return (
@@ -28,14 +37,14 @@ class App extends Component {
 
 const mapStateToProps = (state) => {
     const { stocks } = state;
-    const { results } = stocks;
-    return { results };
+    const { results, stocksLoaded } = stocks;
+    return { results, stocksLoaded };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        getStocks: (url) => {
-            dispatch(getStocks(url));
+        loadStartingStocks: (socket) => {
+            dispatch(loadStartingStocks(socket));
         }
     }
 }
