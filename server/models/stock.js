@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const StockSchema = new Schema({
-    name: { type: String, required: true }
+    name: { type: String, required: true, unique: true, uppercase: true }
 });
 
 const Stock = mongoose.model('Stock', StockSchema);

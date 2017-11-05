@@ -1,18 +1,29 @@
 // actions/index.js
 
-import axios from 'axios';
-
 export const STARTING_STOCKS = 'STARTING_STOCKS';
+export const UPDATE_STOCKS = 'UPDATE_STOCKS';
+export const EDIT_SELECTED_STOCK = 'EDIT_SELECTED_STOCK';
 
 export const startingStocks = (data) => ({
     type: STARTING_STOCKS,
     results: data
+});
+
+export const updateStocks = (data) => ({
+    type: UPDATE_STOCKS,
+    results: data
 })
+
+export const editSelectedStock = (value) => ({
+    type: EDIT_SELECTED_STOCK,
+    value
+});
 
 //Sockets
 export const loadStartingStocks = (socket) => dispatch => {
     socket.on('startingStockList', res => {
-        dispatch(startingStocks(res));
+        dispatch(startingStocks(res.stockData));
     });
 }
+
 
