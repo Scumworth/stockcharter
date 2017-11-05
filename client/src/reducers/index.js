@@ -1,7 +1,7 @@
 // reducers/index.js
 
 import { combineReducers } from 'redux';
-import { STARTING_STOCKS, UPDATE_STOCKS, EDIT_SELECTED_STOCK } from '../actions';
+import { STARTING_STOCKS, UPDATE_STOCKS, EDIT_SELECTED_STOCK, LOADING } from '../actions';
 
 const selectedStock = (state = null, action) => {
     switch(action.type) {
@@ -26,10 +26,16 @@ const stocks = (state = {
                 stocksLoaded: true,
                 results: action.results
             }
+        case LOADING: 
+            return {
+                ...state,
+                stocksLoaded: false
+            }
         case UPDATE_STOCKS:
             return {
                 ...state,
-                results: action.results
+                results: action.results,
+                stocksLoaded: true
             }
         default:
             return state;

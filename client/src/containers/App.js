@@ -5,7 +5,7 @@ import Header from './../components/Header';
 import Footer from './../components/Footer';
 import Main from './../components/Main';
 import { connect } from 'react-redux';
-import { loadStartingStocks, updateStocks, editSelectedStock } from './../actions';
+import { loadStartingStocks, updateStocks, editSelectedStock, loading } from './../actions';
 import Loader from 'react-loader';
 import io from 'socket.io-client';
 let socket;
@@ -63,11 +63,13 @@ const mapDispatchToProps = (dispatch) => {
         handleSubmit: (e, selectedStock) => {
             e.preventDefault();
             console.log('handleSubmit');
+            dispatch(loading());
             socket.emit('addStock', selectedStock);
         },
         handleRemove: (e, removedStock) => {
             e.preventDefault();
             console.log('handleRemove');
+            dispatch(loading());
             socket.emit('removeStock', removedStock);
         },
         loadStartingStocks: (socket) => {

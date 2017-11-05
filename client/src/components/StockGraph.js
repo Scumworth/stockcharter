@@ -6,7 +6,7 @@ import { buildColumns, buildRows } from './../utils'
 
 const StockGraph = ( { results, period }) => (
     <div>
-        { results.length !== 0 ?
+        { results && results.length !== 0 ?
                 <Chart
                     chartType = "LineChart"
                     columns = { buildColumns(results) }
