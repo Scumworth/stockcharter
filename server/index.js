@@ -9,6 +9,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const cors = require('cors')
 const axios = require('axios');
+const moment = require('moment');
 
 const app = express();
 const http = require('http').Server(app);
@@ -52,69 +53,93 @@ const parseStockData = (results) => {
 //socket logic
 
 const updateStocks = (socket) => {
+
     Stock.find({}).then((data) => {
-        if (data.length === 0) {
-            socket.emit('updateStockList', { stockData: [] });
+        
+        if(data.length === 0) {
+            io.sockets.emit('updateStockList', { stockData: [] });
         }
         else {
-            const stockNames = data.map((stock) => stock.name);
-            const stockData = [];
-            //for (let i = 0; i < stockNames.length; i++) {
-                //axios.get(`${apiUrl}function=TIME_SERIES_DAILY_ADJUSTED&symbol=${stockNames[i]}&outputsize=full&apikey=${process.env.API_KEY}`)
-                    //.then(res => {
-                        //stockData.push({ name: stockNames[i], history: res.data })
-                        //if (i === stockNames.length - 1) {
-                            //socket.emit('updateStockList', { stockData: parseStockData(stockData) });
-                        //}
-                    //})
-                    //.catch(e => console.log(`Could not access history for ${stockNames[i]}`));
-            //}
-            const requests = []; 
-            for (let i = 0; i < stockNames.length; i++) {
-                requests.push(axios.get(`${apiUrl}function=TIME_SERIES_DAILY_ADJUSTED&symbol=${stockNames[i]}&outputsize=full&apikey=${process.env.API_KEY}`) );
+            const stockArray = data.map(stock => { return {name: stock.name, data: stock.data} });
+            const stockNames = data.map(stock => stock.name);
+
+            //CHECK TO SEE MOST RECENT DATES IN DB
+            const today = moment(new Date()).format('YYYY-MM-DD')
+            let dateCount = 0;
+            for (let i = 0; i < stockArray.length; i++) {
+                const mostRecentDate = stockArray[i].data.oneYear[stockArray[i].data.oneYear.length - 1].date;
+                if (mostRecentDate  === today) {
+                    dateCount++
+                }
             }
-            axios.all(requests)
-                .then(res => {
-                    for (let i = 0; i < stockNames.length; i++) {
-                        stockData.push({ name: stockNames[i], history: res[i].data })
-                    }
-                    socket.emit('updateStockList', { stockData: parseStockData(stockData) });
-                }).catch(e => console.log(e));
+            
+            if (dateCount === stockArray.length) {
+                io.sockets.emit('updateStockList', { stockData: stockArray });
+            }
+            
+            // OTHERWISE GET DATA FROM AXIOS CALL
+            else {
+                const stockArrayAxios = []
+                const requests = []; 
+                for (let i = 0; i < stockNames.length; i++) {
+                    requests.push(axios.get(`${apiUrl}function=TIME_SERIES_DAILY_ADJUSTED&symbol=${stockNames[i]}&outputsize=full&apikey=${process.env.API_KEY}`) );
+                }
+                axios.all(requests)
+                    .then(res => {
+                        for (let i = 0; i < stockNames.length; i++) {
+                            stockArrayAxios.push({ name: stockNames[i], history: res[i].data })
+                        }
+                        return stockArrayAxios;
+                    })
+                    .then(stockArrayAxios => io.sockets.emit('updateStockList', { stockData: parseStockData(stockArrayAxios)}))
+                    .catch(e => console.log('axios failed to process all api requests while getting initial stocks'));
+            }
         }
     }).catch(e => console.log('Failed to access database.'));
 };
 
 const getInitialStocks = (socket) => {
+
     Stock.find({}).then((data) => {
+        
         if(data.length === 0) {
             socket.emit('startingStockList', { stockData: [] });
         }
         else {
+            const stockArray = data.map(stock => { return {name: stock.name, data: stock.data} });
             const stockNames = data.map(stock => stock.name);
-            const stockData = [];
 
-            //for (let i = 0; i < stockNames.length; i++) {
-                //axios.get(`${apiUrl}function=TIME_SERIES_DAILY_ADJUSTED&symbol=${stockNames[i]}&outputsize=full&apikey=${process.env.API_KEY}`)
-                    //.then(res => {
-                        //stockData.push({name: stockNames[i], history: res.data})
-                        //if (i === stockNames.length - 1) {
-                            //console.log(stockData);
-                            //socket.emit('startingStockList', { stockData: parseStockData(stockData) });
-                        //}
-                    //})
-                    //.catch(e => console.log(`Could not access history for ${stockNames[i]}`));
-           //}
-            const requests = []; 
-            for (let i = 0; i < stockNames.length; i++) {
-                requests.push(axios.get(`${apiUrl}function=TIME_SERIES_DAILY_ADJUSTED&symbol=${stockNames[i]}&outputsize=full&apikey=${process.env.API_KEY}`) );
+            //CHECK TO SEE MOST RECENT DATES IN DB
+            const today = moment(new Date()).format('YYYY-MM-DD')
+            let dateCount = 0;
+            for (let i = 0; i < stockArray.length; i++) {
+                const mostRecentDate = stockArray[i].data.oneYear[stockArray[i].data.oneYear.length - 1].date;
+                if (mostRecentDate  === today) {
+                    dateCount++
+                }
             }
-            axios.all(requests)
-                .then(res => {
-                    for (let i = 0; i < stockNames.length; i++) {
-                        stockData.push({ name: stockNames[i], history: res[i].data })
-                    }
-                    socket.emit('startingStockList', { stockData: parseStockData(stockData) });
-                }).catch(e => console.log(e));
+            
+            if (dateCount === stockArray.length) {
+                socket.emit('startingStockList', { stockData: stockArray });
+            }
+            
+            // OTHERWISE GET DATA FROM AXIOS CALL
+            else {
+                const stockArrayAxios = []
+                const requests = []; 
+                for (let i = 0; i < stockNames.length; i++) {
+                    requests.push(axios.get(`${apiUrl}function=TIME_SERIES_DAILY_ADJUSTED&symbol=${stockNames[i]}&outputsize=full&apikey=${process.env.API_KEY}`) );
+                }
+                axios.all(requests)
+                    .then(res => {
+                        for (let i = 0; i < stockNames.length; i++) {
+                            stockArrayAxios.push({ name: stockNames[i], history: res[i].data })
+                        }
+                        return stockArrayAxios;
+                    })
+                    .then(stockArrayAxios => socket.emit('startingStockList', { stockData: parseStockData(stockArrayAxios)}))
+                    .catch(e => console.log('axios failed to process all api requests while getting initial stocks'));
+            }
         }
     }).catch(e => console.log('Failed to access database.'));
 };
@@ -128,15 +153,27 @@ io.on('connection', socket => {
     socket.on('addStock', (selectedStock) => {
         axios.get(`${apiUrl}function=TIME_SERIES_DAILY_ADJUSTED&symbol=${selectedStock}&outputsize=full&apikey=${process.env.API_KEY}`)
             .then(res => {
-            console.log('error message', res.data['Error Message']);
             const apiError = res.data['Error Message'];
             if(apiError !== undefined){
                 console.log('Not a valid stock symbol');
             }
             else {
-                console.log('Stock found');
+                console.log('Stock found');  
+                const record = res.data['Time Series (Daily)'];
+                const openingArray = [];
+                const data = {};
+                const oneYearArray = [];
+                for (const date in record) {
+                    openingArray.push({date: date, open: record[date]['1. open']});
+                }
+                const reversedArray = openingArray.reverse();
+                for (let i = reversedArray.length - 365; i < reversedArray.length; i++) {
+                    oneYearArray.push(reversedArray[i]);
+                }
+                data.oneYear = oneYearArray;
                 const newStock = new Stock({
-                    name: selectedStock
+                    name: selectedStock,
+                    data: data
                 });
                 newStock.save()
                     .then(() => {

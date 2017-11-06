@@ -3,9 +3,10 @@
 import React, { Component } from 'react';
 import Header from './../components/Header';
 import Footer from './../components/Footer';
+import PeriodBar from './../components/PeriodBar';
 import Main from './../components/Main';
 import { connect } from 'react-redux';
-import { loadStartingStocks, updateStocks, editSelectedStock, loading } from './../actions';
+import { loadStartingStocks, changePeriod, updateStocks, editSelectedStock, loading } from './../actions';
 import Loader from 'react-loader';
 import io from 'socket.io-client';
 let socket;
@@ -31,6 +32,9 @@ class App extends Component {
             <div> 
                 <Loader loaded = { this.props.stocksLoaded }>
                     <Header />
+                    <PeriodBar 
+                        handleChangePeriod = { this.props.handleChangePeriod }
+                    />
                     <Main 
                         results = { this.props.results }
                         handleChange = { this.props.handleChange }
@@ -38,6 +42,7 @@ class App extends Component {
                         handleRemove = { this.props.handleRemove }
                         selectedStock = { this.props.selectedStock }
                         period = { this.props.period }
+                        stocksLoaded = { this.props.stocksLoaded }
                     />
                     <Footer />
                 </Loader>
@@ -65,6 +70,11 @@ const mapDispatchToProps = (dispatch) => {
             console.log('handleSubmit');
             dispatch(loading());
             socket.emit('addStock', selectedStock);
+        },
+        handleChangePeriod: (e, newPeriod) => {
+            e.preventDefault();
+            console.log('changePeriod');
+            dispatch(changePeriod(newPeriod));
         },
         handleRemove: (e, removedStock) => {
             e.preventDefault();

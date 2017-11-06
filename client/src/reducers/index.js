@@ -1,7 +1,7 @@
 // reducers/index.js
 
 import { combineReducers } from 'redux';
-import { STARTING_STOCKS, UPDATE_STOCKS, EDIT_SELECTED_STOCK, LOADING } from '../actions';
+import { STARTING_STOCKS, UPDATE_STOCKS, EDIT_SELECTED_STOCK, LOADING, CHANGE_PERIOD } from '../actions';
 
 const selectedStock = (state = null, action) => {
     switch(action.type) {
@@ -24,7 +24,7 @@ const stocks = (state = {
             return {
                 ...state,
                 stocksLoaded: true,
-                results: action.results
+                results: action.results.map(stock => stock)
             }
         case LOADING: 
             return {
@@ -34,8 +34,13 @@ const stocks = (state = {
         case UPDATE_STOCKS:
             return {
                 ...state,
-                results: action.results,
+                results: action.results.map(stock => stock),
                 stocksLoaded: true
+            }
+        case CHANGE_PERIOD:
+            return {
+                ...state,
+                period: action.newPeriod
             }
         default:
             return state;

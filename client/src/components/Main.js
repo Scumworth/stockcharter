@@ -5,11 +5,12 @@ import StockGraph from './StockGraph';
 import StockBox from './StockBox';
 import StockForm from './StockForm';
 
-const Main = ({ results, period, handleChange, handleSubmit, handleRemove, selectedStock }) => (
+const Main = ({ results, period, handleChange, handleSubmit, handleRemove, stocksLoaded, selectedStock }) => (
     <div>
         <StockGraph 
             results = { results }
             period = { period }
+            stocksLoaded = { stocksLoaded }
         />
         {
             results.length !== 0

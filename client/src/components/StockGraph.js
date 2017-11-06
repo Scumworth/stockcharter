@@ -4,9 +4,9 @@ import React from 'react';
 import { Chart } from 'react-google-charts';
 import { buildColumns, buildRows } from './../utils'
 
-const StockGraph = ( { results, period }) => (
+const StockGraph = ( { results, period, stocksLoaded }) => (
     <div>
-        { results && results.length !== 0 ?
+        { (stocksLoaded && results.length > 0) ?
                 <Chart
                     chartType = "LineChart"
                     columns = { buildColumns(results) }
@@ -19,7 +19,6 @@ const StockGraph = ( { results, period }) => (
                 />
                     : null
         }
-        <h1>StockGraph</h1>
     </div>
 );
 

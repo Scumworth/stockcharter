@@ -3,12 +3,19 @@
 export const STARTING_STOCKS = 'STARTING_STOCKS';
 export const UPDATE_STOCKS = 'UPDATE_STOCKS';
 export const EDIT_SELECTED_STOCK = 'EDIT_SELECTED_STOCK';
-export const LOADING = 'LOADING';
+export const LOADING = 'LOADING'
+export const CHANGE_PERIOD = 'CHANGE_PERIOD';
 
 export const startingStocks = (data) => ({
     type: STARTING_STOCKS,
     results: data
 });
+
+export const changePeriod = (newPeriod) => ({
+    type: CHANGE_PERIOD,
+    newPeriod
+    
+})
 
 export const updateStocks = (data) => ({
     type: UPDATE_STOCKS,
