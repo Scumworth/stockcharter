@@ -156,6 +156,7 @@ io.on('connection', socket => {
             const apiError = res.data['Error Message'];
             if(apiError !== undefined){
                 console.log('Not a valid stock symbol');
+                updateStocks(socket);
             }
             else {
                 console.log('Stock found');  

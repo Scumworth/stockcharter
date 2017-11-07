@@ -69,9 +69,12 @@ const mapDispatchToProps = (dispatch) => {
             dispatch(editSelectedStock(value));
         },
         handleSubmit: (e, selectedStock) => {
-            e.preventDefault();
-            console.log('handleSubmit');
-            socket.emit('addStock', selectedStock);
+            if (selectedStock !== "" && selectedStock !== null && selectedStock !== undefined) {
+                e.preventDefault();
+                console.log('handleSubmit');
+                dispatch(loading());
+                socket.emit('addStock', selectedStock);
+            }
         },
         handleChangePeriod: (e, newPeriod) => {
             e.preventDefault();
