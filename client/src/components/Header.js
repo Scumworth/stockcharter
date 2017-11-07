@@ -7,6 +7,7 @@ const Header = () => (
     <div>
         <Jumbotron style = {{ textAlign: 'center' }}>
             <h1>FreeCodeCamp StockCharter App</h1>
+            <p>(built using the Alpha Vantage API)</p>
         </Jumbotron>
     </div>
 );
