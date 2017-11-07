@@ -12,7 +12,7 @@ import io from 'socket.io-client';
 let socket;
 
 const devHost = 'https://localhost:3001';
-const prodHost = 'https://evening-beach-99280.herokuapp.com';
+const prodHost = process.env.HEROKU_URL;
 
 class App extends Component {
 

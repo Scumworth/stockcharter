@@ -181,10 +181,17 @@ io.on('connection', socket => {
                         console.log('Stock saved');
                         updateStocks(socket);
                     })
-                    .catch(e => console.log(e));
+                    .catch(e => {
+                        console.log(e)
+                        updateStocks(socket);
+                    });
             }
                     })
-        .catch(e => console.log('API call failed'));
+            .catch(e => {
+                updateStocks(socket);
+                console.log('API call failed')
+                }
+            );
     });
 
     // remove stock
