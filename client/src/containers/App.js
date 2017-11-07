@@ -71,7 +71,6 @@ const mapDispatchToProps = (dispatch) => {
         handleSubmit: (e, selectedStock) => {
             e.preventDefault();
             console.log('handleSubmit');
-            dispatch(loading());
             socket.emit('addStock', selectedStock);
         },
         handleChangePeriod: (e, newPeriod) => {
