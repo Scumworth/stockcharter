@@ -11,13 +11,15 @@ import Loader from 'react-loader';
 import io from 'socket.io-client';
 let socket;
 
+const devHost = 'https://localhost:3001';
+const prodHost = 'https://evening-beach-99280.herokuapp.com';
+
 class App extends Component {
 
     constructor(props) {
         super(props);
         const dispatch = this.props.dispatch;
-        //socket = io.connect('http://localhost:3001');
-        socket = io();
+        socket = io.connect(prodHost);
         socket.on('updateStockList', res => {
                dispatch(updateStocks(res.stockData)) 
         });
