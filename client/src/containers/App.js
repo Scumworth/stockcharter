@@ -16,7 +16,8 @@ class App extends Component {
     constructor(props) {
         super(props);
         const dispatch = this.props.dispatch;
-        socket = io.connect('http://localhost:3001');
+        //socket = io.connect('http://localhost:3001');
+        socket = io();
         socket.on('updateStockList', res => {
                dispatch(updateStocks(res.stockData)) 
         });
